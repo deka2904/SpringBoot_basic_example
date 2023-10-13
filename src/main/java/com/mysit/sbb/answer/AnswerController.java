@@ -103,6 +103,6 @@ public class AnswerController {
             return "question_detail";
         }
         Comment comment = this.commentService.create(answer, commentForm.getContent(), user);
-        return String.format("redirect:/question/detail/%s#comment_%s", comment.getAnswer().getId(), comment.getId());
+        return String.format("redirect:/question/detail/%s#comment_%s", answer.getQuestion().getId(), comment.getId());
     }
 }
