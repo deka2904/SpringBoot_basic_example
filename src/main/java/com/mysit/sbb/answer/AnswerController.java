@@ -1,5 +1,8 @@
 package com.mysit.sbb.answer;
 
+import com.mysit.sbb.comment.Comment;
+import com.mysit.sbb.comment.CommentForm;
+import com.mysit.sbb.comment.CommentService;
 import com.mysit.sbb.question.Question;
 import com.mysit.sbb.question.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class AnswerController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
@@ -81,5 +85,24 @@ public class AnswerController {
         SiteUser siteUser = this.userService.getUser(principal.getName());
         this.answerService.vote(answer, siteUser);
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
+    }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/create/answer/{id}")
+    public String createAnswerComment(CommentForm commentForm) {
+        return "comment_form";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/create/answer/{id}")
+        public String createAnswerComment(Model model, @PathVariable("id") Integer id, @Valid CommentForm commentForm,
+                                      BindingResult bindingResult, Principal principal) {
+        Answer answer = this.answerService.getAnswer(id);
+        SiteUser user = this.userService.getUser(principal.getName());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("answer", answer);
+            return "question_detail";
+        }
+        Comment comment = this.commentService.create(answer, commentForm.getContent(), user);
+        return String.format("redirect:/question/detail/%s#comment_%s", comment.getAnswer().getId(), comment.getId());
     }
 }

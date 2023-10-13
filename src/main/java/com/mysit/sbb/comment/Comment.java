@@ -1,23 +1,18 @@
-package com.mysit.sbb.answer;
+package com.mysit.sbb.comment;
 
-import java.time.LocalDateTime;
-
-import com.mysit.sbb.comment.Comment;
+import com.mysit.sbb.answer.Answer;
 import com.mysit.sbb.question.Question;
 import com.mysit.sbb.user.SiteUser;
 import jakarta.persistence.*;
-import com.mysit.sbb.user.SiteUser;
-
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-public class Answer {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,17 +22,14 @@ public class Answer {
 
     private LocalDateTime createDate;
 
+    private LocalDateTime modifyDate;
+
     @ManyToOne
     private Question question;
 
     @ManyToOne
     private SiteUser author;
 
-    private LocalDateTime modifyDate;
-
-    @ManyToMany
-    Set<SiteUser> voter;
-
-    @OneToMany(mappedBy = "answer")
-    private List<Comment> commentList;
+    @ManyToOne
+    private Answer answer;
 }

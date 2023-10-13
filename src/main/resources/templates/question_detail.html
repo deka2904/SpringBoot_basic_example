@@ -34,6 +34,30 @@
                        th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                        th:text="삭제"></a>
                 </div>
+                <!-- 질문 댓글 Start -->
+                <div class="mt-3" th:if="${not #lists.isEmpty(question.commentList)}">
+                    <div th:each="comment,index : ${question.commentList}" class="comment py-2 text-muted">
+                        <span style="white-space: pre-line;" th:text="${comment.content}"></span>
+                        <div class="badge bg-light text-dark p-2 text-start">
+                            <div class="mb-2">
+                                <span th:if="${comment.modifyDate != null}"
+                                      th:text="|[${comment.author.username}] [${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')} (수정: ${#temporals.format(comment.modifyDate, 'yyyy-MM-dd HH:mm')})]|"></span>
+                                <span th:if="${comment.modifyDate == null}"
+                                      th:text="|[${comment.author.username}] [${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}]|"></span>
+                            </div>
+                        </div>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                           th:href="@{|/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                           href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
+                    </div>
+                </div>
+                <div>
+                    <a th:href="@{|/question/create/question/${question.id}|}" class="btn btn-sm btn-outline-secondary">댓글 추가</a>
+                </div>
+                <!-- 질문 댓글 End -->
             </div>
         </div>
         <!-- 답변의 갯수 표시 -->
@@ -71,6 +95,30 @@
                        th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                        th:text="삭제"></a>
                 </div>
+                <!-- 질문 댓글 Start -->
+                <div class="mt-3" th:if="${not #lists.isEmpty(answer.commentList)}">
+                    <div th:each="comment, index : ${answer.commentList}" class="comment py-2 text-muted">
+                        <span style="white-space: pre-line;" th:text="${comment.content}"></span>
+                        <div class="badge bg-light text-dark p-2 text-start">
+                            <div class="mb-2">
+                                <span th:if="${comment.modifyDate != null}"
+                                      th:text="|[${comment.author.username}] [${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')} (수정: ${#temporals.format(comment.modifyDate, 'yyyy-MM-dd HH:mm')})]|"></span>
+                                <span th:if="${comment.modifyDate == null}"
+                                      th:text="|[${comment.author.username}] [${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}]|"></span>
+                            </div>
+                        </div>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                           th:href="@{|/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
+                           href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
+                    </div>
+                </div>
+                <div>
+                    <a th:href="@{|/answer/create/answer/${answer.id}|}" class="btn btn-sm btn-outline-secondary">댓글 추가</a>
+                </div>
+                <!-- 질문 댓글 End -->
             </div>
         </div>
         <!-- 답변 반복 끝  -->

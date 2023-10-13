@@ -1,5 +1,8 @@
 package com.mysit.sbb.question;
 
+import com.mysit.sbb.comment.Comment;
+import com.mysit.sbb.comment.CommentForm;
+import com.mysit.sbb.comment.CommentService;
 import org.springframework.ui.Model;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,7 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @GetMapping("/list")
    // @ResponseBody
@@ -105,5 +109,25 @@ public class QuestionController {
         SiteUser siteUser = this.userService.getUser(principal.getName());
         this.questionService.vote(question, siteUser);
         return String.format("redirect:/question/detail/%s", id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/create/question/{id}")
+    public String createQuestionComment(CommentForm commentForm) {
+        return "comment_form";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/create/question/{id}")
+    public String createQuestionComment(Model model, @PathVariable("id") Integer id, @Valid CommentForm commentForm,
+                                        BindingResult bindingResult, Principal principal) {
+        Question question = this.questionService.getQuestion(id);
+        SiteUser user = this.userService.getUser(principal.getName());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("question", question);
+            return "question_detail";
+        }
+        Comment comment = this.commentService.create(question, commentForm.getContent(), user);
+        return String.format("redirect:/question/detail/%s#comment_%s", comment.getQuestion().getId(), comment.getId());
     }
 }

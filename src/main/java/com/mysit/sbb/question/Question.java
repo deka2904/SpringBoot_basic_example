@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.mysit.sbb.answer.Answer;
+import com.mysit.sbb.comment.Comment;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,4 +44,6 @@ public class Question {
     @ManyToMany
     Set<SiteUser> voter;
 
+    @OneToMany(mappedBy = "question")
+    private List<Comment> commentList;
 }
