@@ -4,6 +4,7 @@
     <div layout:fragment="content" class="container my-3">
         <!-- 질문 -->
         <h2 class="border-bottom py-2" th:text="${question.subject}"></h2>
+        <div class="p-1 bg-dark text-white" th:text="${question.category}"></div>
         <div class="card my-3">
             <div class="card-body">
                 <div class="card-text" th:utext="${@commonUtil.markdown(question.content)}"></div>
@@ -47,11 +48,11 @@
                             </div>
                         </div>
                         <a sec:authorize="isAuthenticated()"
-                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
-                           th:href="@{|/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
-                        <a sec:authorize="isAuthenticated()"
-                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
-                           href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
+                           th:if="${question.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}"
+                           th:href="@{|/question/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="javascript:void(0);" th:data-uri="@{|/question/comment/delete/${comment.id}|}"
+                           class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                           th:if="${question.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}">삭제</a>
                     </div>
                 </div>
                 <div>
@@ -108,11 +109,11 @@
                             </div>
                         </div>
                         <a sec:authorize="isAuthenticated()"
-                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
-                           th:href="@{|/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
-                        <a sec:authorize="isAuthenticated()"
-                           th:if="${#authentication.getPrincipal().getUsername() == comment.author.username}"
-                           href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
+                           th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}"
+                           th:href="@{|/answer/comment/modify/${comment.id}|}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="javascript:void(0);" th:data-uri="@{|/answer/comment/delete/${comment.id}|}"
+                           class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                           th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}">삭제</a>
                     </div>
                 </div>
                 <div>

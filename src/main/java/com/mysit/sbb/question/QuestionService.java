@@ -25,6 +25,10 @@ import org.springframework.data.jpa.domain.Specification;
 @Service
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    public void setQuestionViewUp(Question question) {
+        question.setView(question.getView() + 1);
+        this.questionRepository.save(question);
+    }
 
     public List<Question> getList() {
         return this.questionRepository.findAll();
@@ -38,12 +42,13 @@ public class QuestionService {
             throw new DataNotFoundException("question not found");
         }
     }
-    public void create(String subject, String content, SiteUser user) {
+    public void create(String subject, String content, SiteUser user, String category) {
         Question q = new Question();
         q.setSubject(subject);
         q.setContent(content);
         q.setCreateDate(LocalDateTime.now());
         q.setAuthor(user);
+        q.setCategory(category);
         this.questionRepository.save(q);
     }
     public Page<Question> getList(int page, String kw) {
@@ -54,10 +59,11 @@ public class QuestionService {
         return this.questionRepository.findAllByKeyword(kw, pageable);
     }
 
-    public void modify(Question question, String subject, String content) {
+    public void modify(Question question, String subject, String content, String category) {
         question.setSubject(subject);
         question.setContent(content);
         question.setModifyDate(LocalDateTime.now());
+        question.setCategory(category);
         this.questionRepository.save(question);
     }
     public void delete(Question question) {

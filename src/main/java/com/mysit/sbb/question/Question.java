@@ -44,6 +44,11 @@ public class Question {
     @ManyToMany
     Set<SiteUser> voter;
 
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int view;
+
     @OneToMany(mappedBy = "question")
     private List<Comment> commentList;
+
+    private String category;
 }

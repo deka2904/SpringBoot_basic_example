@@ -7,6 +7,7 @@ import com.mysit.sbb.question.Question;
 import com.mysit.sbb.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,5 +44,17 @@ public class CommentService {
         } else {
             throw new DataNotFoundException("comment not found");
         }
+    }
+    public void modify(Comment comment, String content) {
+        comment.setContent(content);
+        comment.setModifyDate(LocalDateTime.now());
+        this.commentRepository.save(comment);
+    }
+    public void delete(Comment comment) {
+        this.commentRepository.delete(comment);
+    }
+    @Transactional
+    public void deleteCommentsByAnswer(Answer answer) {
+        commentRepository.deleteCommentsByAnswer(answer);
     }
 }

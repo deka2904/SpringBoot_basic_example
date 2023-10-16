@@ -1,19 +1,17 @@
 package com.mysit.sbb.question;
 
+import com.mysit.sbb.answer.Answer;
+import com.mysit.sbb.answer.AnswerService;
 import com.mysit.sbb.comment.Comment;
 import com.mysit.sbb.comment.CommentForm;
 import com.mysit.sbb.comment.CommentService;
 import org.springframework.ui.Model;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import com.mysit.sbb.answer.AnswerForm;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Page;
 import java.security.Principal;
 import com.mysit.sbb.user.SiteUser;
@@ -30,9 +28,10 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
     private final CommentService commentService;
+    private final AnswerService answerService;
+    private final QuestionRepository questionRepository;
 
     @GetMapping("/list")
-   // @ResponseBody
     public String list(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
         Page<Question> paging = this.questionService.getList(page, kw);
         model.addAttribute("paging", paging);
@@ -40,6 +39,13 @@ public class QuestionController {
         return "question_list";
     }
 
+    @GetMapping(value = "/detailviewup/{id}")
+    public String detailviewup(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
+        Question question = this.questionService.getQuestion(id);
+        this.questionService.setQuestionViewUp(question);
+        model.addAttribute("question", question);
+        return "question_detail";
+    }
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
         Question question = this.questionService.getQuestion(id);
@@ -60,7 +66,7 @@ public class QuestionController {
             return "question_form";
         }
         SiteUser siteUser = this.userService.getUser(principal.getName());
-        this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
+        this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, questionForm.getCategory());
         return "redirect:/question/list"; // 질문 저장후 질문목록으로 이동
     }
 
@@ -73,6 +79,7 @@ public class QuestionController {
         }
         questionForm.setSubject(question.getSubject());
         questionForm.setContent(question.getContent());
+        questionForm.setCategory(question.getCategory());
         return "question_form";
     }
 
@@ -87,7 +94,7 @@ public class QuestionController {
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent(), questionForm.getCategory() );
         return String.format("redirect:/question/detail/%s", id);
     }
 
@@ -129,5 +136,41 @@ public class QuestionController {
         }
         Comment comment = this.commentService.create(question, commentForm.getContent(), user);
         return String.format("redirect:/question/detail/%s#comment_%s", comment.getQuestion().getId(), comment.getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/comment/modify/{id}")
+    public String questionCommentModify(CommentForm commentForm, @PathVariable("id") Integer id, Principal principal) {
+        Comment comment = this.commentService.getComment(id);
+        if(!comment.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        }
+        commentForm.setContent(comment.getContent());
+        return "comment_form";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/comment/modify/{id}")
+    public String questionCommentModify(@Valid CommentForm commentForm, BindingResult bindingResult,
+                                 Principal principal, @PathVariable("id") Integer id) {
+        if (bindingResult.hasErrors()) {
+            return "comment_form";
+        }
+        Comment comment = this.commentService.getComment(id);
+        if (!comment.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        }
+        this.commentService.modify(comment, commentForm.getContent());
+        return String.format("redirect:/question/detail/%s", comment.getQuestion().getId());
+    }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/comment/delete/{id}")
+    public String questionCommentDelete(Principal principal, @PathVariable("id") Integer id) {
+        Comment comment = this.commentService.getComment(id);
+        if (!comment.getAuthor().getUsername().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
+        }
+        this.commentService.delete(comment);
+        return String.format("redirect:/question/detail/%s", comment.getQuestion().getId());
     }
 }

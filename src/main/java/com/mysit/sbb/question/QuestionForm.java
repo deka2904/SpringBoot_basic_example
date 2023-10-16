@@ -1,5 +1,6 @@
 package com.mysit.sbb.question;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
@@ -15,4 +16,7 @@ public class QuestionForm {
 
     @NotEmpty(message="내용은 필수항목입니다.")
     private String content;
+
+    @NotBlank(message = "카테고리선택은 필수항목입니다.")
+    private String category;
 }
