@@ -2,6 +2,7 @@ package com.mysit.sbb.question;
 
 import com.mysit.sbb.answer.Answer;
 import com.mysit.sbb.answer.AnswerService;
+import com.mysit.sbb.category.Category;
 import com.mysit.sbb.comment.Comment;
 import com.mysit.sbb.comment.CommentForm;
 import com.mysit.sbb.comment.CommentService;
@@ -79,7 +80,6 @@ public class QuestionController {
         }
         questionForm.setSubject(question.getSubject());
         questionForm.setContent(question.getContent());
-        questionForm.setCategory(question.getCategory());
         return "question_form";
     }
 
@@ -94,7 +94,7 @@ public class QuestionController {
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent(), questionForm.getCategory() );
+        this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent(), questionForm.getCategory());
         return String.format("redirect:/question/detail/%s", id);
     }
 

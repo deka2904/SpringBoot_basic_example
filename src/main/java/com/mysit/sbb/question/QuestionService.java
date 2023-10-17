@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mysit.sbb.DataNotFoundException;
+import com.mysit.sbb.category.Category;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
+
 @RequiredArgsConstructor
 @Service
 public class QuestionService {
@@ -42,7 +44,7 @@ public class QuestionService {
             throw new DataNotFoundException("question not found");
         }
     }
-    public void create(String subject, String content, SiteUser user, String category) {
+    public void create(String subject, String content, SiteUser user, Category category) {
         Question q = new Question();
         q.setSubject(subject);
         q.setContent(content);
@@ -54,12 +56,12 @@ public class QuestionService {
     public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 3, Sort.by(sorts));
         Specification<Question> spec = search(kw);
         return this.questionRepository.findAllByKeyword(kw, pageable);
     }
 
-    public void modify(Question question, String subject, String content, String category) {
+    public void modify(Question question, String subject, String content, Category category) {
         question.setSubject(subject);
         question.setContent(content);
         question.setModifyDate(LocalDateTime.now());
@@ -74,6 +76,7 @@ public class QuestionService {
         question.getVoter().add(siteUser);
         this.questionRepository.save(question);
     }
+
     private Specification<Question> search(String kw) {
         return new Specification<>() {
             private static final long serialVersionUID = 1L;

@@ -3,20 +3,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.mysit.sbb.answer.Answer;
+import com.mysit.sbb.category.Category;
 import com.mysit.sbb.comment.Comment;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import com.mysit.sbb.user.SiteUser;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Set;
-import jakarta.persistence.ManyToMany;
+
 @Getter
 @Setter
 @Entity
@@ -50,5 +44,6 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Comment> commentList;
 
-    private String category;
+    @ManyToOne
+    private Category category;
 }
