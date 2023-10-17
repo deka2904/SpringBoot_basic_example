@@ -44,6 +44,7 @@ public class QuestionService {
             throw new DataNotFoundException("question not found");
         }
     }
+
     public void create(String subject, String content, SiteUser user, Category category) {
         Question q = new Question();
         q.setSubject(subject);
@@ -54,11 +55,16 @@ public class QuestionService {
         this.questionRepository.save(q);
     }
     public Page<Question> getList(int page, String kw) {
+            List<Sort.Order> sorts = new ArrayList<>();
+            sorts.add(Sort.Order.desc("createDate"));
+            Pageable pageable = PageRequest.of(page, 3, Sort.by(sorts));
+        return this.questionRepository.findAllByKeyword(kw, pageable);
+    }
+    public Page<Question> getCategoryList(int page, int id) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 3, Sort.by(sorts));
-        Specification<Question> spec = search(kw);
-        return this.questionRepository.findAllByKeyword(kw, pageable);
+        return this.questionRepository.findByCategoryId(id, pageable);
     }
 
     public void modify(Question question, String subject, String content, Category category) {

@@ -13,6 +13,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     public Category getCategory(Integer id) {
         Optional<Category> category = this.categoryRepository.findById(id);
+
         if (category.isPresent()) {
             return category.get();
         } else {

@@ -1,4 +1,5 @@
 package com.mysit.sbb.question;
+import com.mysit.sbb.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,27 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     List<Question> findBySubjectLike(String subject);
     Page<Question> findAll(Pageable pageable);
     Page<Question> findAll(Specification<Question> spec, Pageable pageable);
+
+//    @Query("select "
+//            + "distinct q "
+//            + "from Question q "
+//            + "left outer join SiteUser u1 on q.author=u1 "
+//            + "left outer join Answer a on a.question=q "
+//            + "left outer join SiteUser u2 on a.author=u2 "
+//            + "left outer join Category c on q.category=c"
+//            + "where c.categoryId = :id")
+//    Page<Question> findByCategoryId(@Param("id") Integer id, Pageable pageable);
+
+    @Query("select "
+            + "distinct q "
+            + "from Question q "
+            + "left outer join SiteUser u1 on q.author=u1 "
+            + "left outer join Answer a on a.question=q "
+            + "left outer join SiteUser u2 on a.author=u2 "
+            + "left outer join Category c on q.category=c "
+            + "where q.category.id = :id")
+    Page<Question> findByCategoryId(@Param("id") Integer id, Pageable pageable);
+
     @Query("select "
             + "distinct q "
             + "from Question q "

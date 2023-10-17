@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
+
 @RequestMapping("/question")
 @RequiredArgsConstructor
 @Controller
@@ -32,11 +34,19 @@ public class QuestionController {
     private final AnswerService answerService;
     private final QuestionRepository questionRepository;
 
-    @GetMapping("/list")
+    @GetMapping("/categorylist/0")
     public String list(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
         Page<Question> paging = this.questionService.getList(page, kw);
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
+        return "question_list";
+    }
+
+    @GetMapping("/categorylist/{id}")
+    public String categorylist(Model model, @RequestParam(value="page", defaultValue="0") int page, @PathVariable("id") Integer id) {
+        Page<Question> paging = this.questionService.getCategoryList(page, id);
+        model.addAttribute("paging", paging);
+        model.addAttribute("id", id);
         return "question_list";
     }
 
