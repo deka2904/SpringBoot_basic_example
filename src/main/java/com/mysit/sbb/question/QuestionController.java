@@ -34,33 +34,38 @@ public class QuestionController {
     private final AnswerService answerService;
     private final QuestionRepository questionRepository;
 
-    @GetMapping("/categorylist/0")
-    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
-        Page<Question> paging = this.questionService.getList(page, kw);
-        model.addAttribute("paging", paging);
-        model.addAttribute("kw", kw);
-        return "question_list";
-    }
-
     @GetMapping("/categorylist/{id}")
-    public String categorylist(Model model, @RequestParam(value="page", defaultValue="0") int page, @PathVariable("id") Integer id) {
-        Page<Question> paging = this.questionService.getCategoryList(page, id);
-        model.addAttribute("paging", paging);
-        model.addAttribute("id", id);
+    public String categorylist(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw, @PathVariable("id") Integer id) {
+        if (id.equals(0)){
+            Page<Question> paging = this.questionService.getList(page, kw);
+            model.addAttribute("paging", paging);
+            model.addAttribute("kw", kw);
+            model.addAttribute("id", 0);
+        }else{
+            Page<Question> paging = this.questionService.getCategoryList(page, id);
+            model.addAttribute("paging", paging);
+            model.addAttribute("id", id);
+        }
         return "question_list";
     }
 
     @GetMapping(value = "/detailviewup/{id}")
-    public String detailviewup(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
+    public String detailviewup(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+                               @RequestParam(value = "answerPage", defaultValue = "0") int answerPage) {
         Question question = this.questionService.getQuestion(id);
+        Page<Answer> answerPaging =  this.answerService.getList(question, answerPage);
         this.questionService.setQuestionViewUp(question);
         model.addAttribute("question", question);
+        model.addAttribute("answerPaging", answerPaging);
         return "question_detail";
     }
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+                         @RequestParam(value = "answerPage", defaultValue = "0") int answerPage) {
         Question question = this.questionService.getQuestion(id);
+        Page<Answer> answerPaging =  this.answerService.getList(question, answerPage);
         model.addAttribute("question", question);
+        model.addAttribute("answerPaging", answerPaging);
         return "question_detail";
     }
 
@@ -78,7 +83,7 @@ public class QuestionController {
         }
         SiteUser siteUser = this.userService.getUser(principal.getName());
         this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, questionForm.getCategory());
-        return "redirect:/question/list"; // 질문 저장후 질문목록으로 이동
+        return "redirect:/question/categorylist/0"; // 질문 저장후 질문목록으로 이동
     }
 
     @PreAuthorize("isAuthenticated()")

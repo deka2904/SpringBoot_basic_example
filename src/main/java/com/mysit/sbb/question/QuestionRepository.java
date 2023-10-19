@@ -1,4 +1,5 @@
 package com.mysit.sbb.question;
+import com.mysit.sbb.answer.Answer;
 import com.mysit.sbb.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,6 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     List<Question> findBySubjectLike(String subject);
     Page<Question> findAll(Pageable pageable);
     Page<Question> findAll(Specification<Question> spec, Pageable pageable);
-
 //    @Query("select "
 //            + "distinct q "
 //            + "from Question q "
