@@ -6,10 +6,13 @@ import com.mysit.sbb.answer.Answer;
 import com.mysit.sbb.question.Question;
 import com.mysit.sbb.user.SiteUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,5 +59,21 @@ public class CommentService {
     @Transactional
     public void deleteCommentsByAnswer(Answer answer) {
         commentRepository.deleteCommentsByAnswer(answer);
+    }
+    public Page<Comment> getList(Question question, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 2, Sort.by(sorts));
+        return this.commentRepository.findAllByQuestion(question, pageable);
+    }
+    public Page<Comment> getList(List<Answer> answers, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 2, Sort.by(sorts));
+        Page<Comment> commentPage = null;
+        for (int i = 0; i < answers.size(); i++) {
+            commentPage = this.commentRepository.findAllByAnswer(answers.get(i), pageable);
+        }
+        return commentPage;
     }
 }

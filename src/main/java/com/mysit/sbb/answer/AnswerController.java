@@ -6,11 +6,10 @@ import com.mysit.sbb.comment.CommentService;
 import com.mysit.sbb.question.Question;
 import com.mysit.sbb.question.QuestionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import java.security.Principal;
@@ -18,7 +17,6 @@ import com.mysit.sbb.user.SiteUser;
 import com.mysit.sbb.user.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,8 +39,7 @@ public class AnswerController {
             model.addAttribute("question", question);
             return "question_detail";
         }
-        Answer answer = this.answerService.create(question,
-                answerForm.getContent(), siteUser);
+        Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);
         int page = question.getAnswerList().size() / 10;
         re.addAttribute("answerPage", page);
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
@@ -103,7 +100,7 @@ public class AnswerController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/create/answer/{id}")
         public String createAnswerComment(Model model, @PathVariable("id") Integer id, @Valid CommentForm commentForm,
-                                      BindingResult bindingResult, Principal principal) {
+                                      BindingResult bindingResult, Principal principal, RedirectAttributes re) {
         Answer answer = this.answerService.getAnswer(id);
         SiteUser user = this.userService.getUser(principal.getName());
         if (bindingResult.hasErrors()) {
@@ -111,6 +108,8 @@ public class AnswerController {
             return "question_detail";
         }
         Comment comment = this.commentService.create(answer, commentForm.getContent(), user);
+        int page = answer.getCommentList().size() / 10;
+        re.addAttribute("commentPage", page);
         return String.format("redirect:/question/detail/%s#comment_%s", answer.getQuestion().getId(), comment.getId());
     }
 

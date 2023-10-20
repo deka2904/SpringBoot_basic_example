@@ -55,15 +55,15 @@ public class QuestionService {
         this.questionRepository.save(q);
     }
     public Page<Question> getList(int page, String kw) {
-            List<Sort.Order> sorts = new ArrayList<>();
-            sorts.add(Sort.Order.desc("createDate"));
-            Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
         return this.questionRepository.findAllByKeyword(kw, pageable);
     }
     public Page<Question> getCategoryList(int page, int id) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
         return this.questionRepository.findByCategoryId(id, pageable);
     }
 
