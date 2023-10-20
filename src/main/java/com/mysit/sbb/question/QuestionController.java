@@ -53,30 +53,32 @@ public class QuestionController {
     @GetMapping(value = "/detailviewup/{id}")
     public String detailviewup(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
                                @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
-                               @RequestParam(value = "commentPage", defaultValue = "0") int commentPage) {
+                               @RequestParam(value = "Question_commentPage", defaultValue = "0") int Question_commentPage,
+                               @RequestParam(value = "Answer_commentPage", defaultValue = "0") int Answer_commentPage) {
         Question question = this.questionService.getQuestion(id);
         Page<Answer> answerPaging =  this.answerService.getList(question, answerPage);
-        Page<Comment> commentPaging = this.commentService.getList(question, commentPage);
-//        Page<Comment> Answer_commentPaging = this.commentService.getList(question.getAnswerList(),commentPage);
+        Page<Comment> commentPaging = this.commentService.getList(question, Question_commentPage);
+        List<Page<Comment>> Answer_commentPaging = this.commentService.getList(question.getAnswerList(), Answer_commentPage);
         this.questionService.setQuestionViewUp(question);
         model.addAttribute("question", question);
         model.addAttribute("answerPaging", answerPaging);
         model.addAttribute("commentPaging", commentPaging);
-//        model.addAttribute("Answer_commentPaging", Answer_commentPaging);
+        model.addAttribute("Answer_commentPaging", Answer_commentPaging);
         return "question_detail";
     }
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
                          @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
-                         @RequestParam(value = "commentPage", defaultValue = "0") int commentPage) {
+                         @RequestParam(value = "Question_commentPage", defaultValue = "0") int Question_commentPage,
+                         @RequestParam(value = "Answer_commentPage", defaultValue = "0") int Answer_commentPage) {
         Question question = this.questionService.getQuestion(id);
         Page<Answer> answerPaging =  this.answerService.getList(question, answerPage);
-        Page<Comment> commentPaging = this.commentService.getList(question, commentPage);
-//        Page<Comment> Answer_commentPaging = this.commentService.getList(question.getAnswerList(),commentPage);
+        Page<Comment> commentPaging = this.commentService.getList(question, Question_commentPage);
+        List<Page<Comment>> Answer_commentPaging = this.commentService.getList(question.getAnswerList(),Answer_commentPage);
         model.addAttribute("question", question);
         model.addAttribute("answerPaging", answerPaging);
         model.addAttribute("commentPaging", commentPaging);
-//        model.addAttribute("Answer_commentPaging", Answer_commentPaging);
+        model.addAttribute("Answer_commentPaging", Answer_commentPaging);
         return "question_detail";
     }
 

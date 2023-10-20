@@ -66,14 +66,21 @@ public class CommentService {
         Pageable pageable = PageRequest.of(page, 2, Sort.by(sorts));
         return this.commentRepository.findAllByQuestion(question, pageable);
     }
-    public Page<Comment> getList(List<Answer> answers, int page) {
+    public List<Page<Comment>> getList(List<Answer> answers, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 2, Sort.by(sorts));
-        Page<Comment> commentPage = null;
+        List<Page<Comment>> commentPageList = new ArrayList<>();
         for (int i = 0; i < answers.size(); i++) {
-            commentPage = this.commentRepository.findAllByAnswer(answers.get(i), pageable);
+            commentPageList.add(this.commentRepository.findAllByAnswer(answers.get(i), pageable));
         }
-        return commentPage;
+        return commentPageList;
+    }
+
+    public Page<Comment> getList(Answer answer, int page){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 2, Sort.by(sorts));
+        return this.commentRepository.findAllByAnswer(answer, pageable);
     }
 }

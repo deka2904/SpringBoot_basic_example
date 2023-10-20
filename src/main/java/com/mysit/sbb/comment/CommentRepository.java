@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     Page<Comment> findAllByQuestion(Question question, Pageable pagealbe);   // 질문 하나당 답변 페이징
-    Page<Comment> findAllByAnswer(List<Answer> answers, Pageable pageable);
+//    Page<Comment> findAllByAnswer(List<Answer> answers, Pageable pageable);
     Page<Comment> findAllByAnswer(Answer answer, Pageable pageable);
 
 
